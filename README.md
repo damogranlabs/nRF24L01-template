@@ -1,6 +1,6 @@
 # nRF24L01+ libarary
-Based on [this project, tutorials and files](http://blog.diyembedded.com/search/label/nrf24l01) \(diyembedded.com\).    
-Modified by: [Damogran Labs: https://damogranlabs.com/](https://damogranlabs.com/2019/02/nrf24l01+-stm32-library).  
+Based on [this project, tutorials and files (diyembedded.com)](http://blog.diyembedded.com/search/label/nrf24l01).  
+Modified by: [Damogran Labs: (damogranlabs.com)](https://damogranlabs.com/2019/02/nrf24l01-library/).  
 Date: 4.2.2019  
 
 ## About
@@ -27,4 +27,4 @@ There are two pairs of files:
   * ...
 * Open *nrf24l01_user.c/.h* and resolve *TODO* fields (delay, gpio, spi transfer, ...)
   
-Note: the examples given are just a bare-bone init and RX/TX samples. There are many examples with all the explanation on original author web page.
+**Note:** the examples given are just a bare-bone init and RX/TX samples. There are many examples with all the explanation on original author web page.
