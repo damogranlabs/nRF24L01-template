@@ -95,6 +95,6 @@ bool nrf24l01_csn_pin_active()
 /******************************************************************************
  * TODO: Send given `byte` over chosen SPI interface, wait and return received byte.
  ******************************************************************************/
-uint8_t spi_send_read_byte(uint8_t byte)
+uint8_t nrf24l01_spi_send_read_byte(uint8_t byte)
 {
 }

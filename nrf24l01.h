@@ -6,8 +6,8 @@
 #ifndef __NRF24L01_H
 #define __NRF24L01_H
 
-#include <stdint.h>  // 'uint_x' type definition
-#include <stdbool.h> // 'bool' type definition
+#include <stdbool.h>
+#include <stdint.h>
 
 /******************************************************************************
  * The following are defines for all of the commands and data masks on the SPI interface.
@@ -352,6 +352,6 @@ void nrf24l01_clear_csn(void);
 void nrf24l01_set_csn(void);
 bool nrf24l01_csn_pin_active(void);
 
-uint8_t spi_send_read_byte(uint8_t byte);
+uint8_t nrf24l01_spi_send_read_byte(uint8_t byte);
 
 #endif /*__NRF24L01_H */

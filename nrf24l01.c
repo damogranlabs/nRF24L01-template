@@ -1140,12 +1140,12 @@ void nrf24l01_spi_send_read(uint8_t *data, unsigned int len, bool copydata)
     {
         if (copydata != false)
         {
-            data[count] = spi_send_read_byte(data[count]);
+            data[count] = nrf24l01_spi_send_read_byte(data[count]);
         }
         else
         {
             tempbyte = data[count];
-            spi_send_read_byte(tempbyte);
+            nrf24l01_spi_send_read_byte(tempbyte);
         }
     }
 }
