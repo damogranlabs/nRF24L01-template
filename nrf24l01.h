@@ -9,8 +9,6 @@
 #include <stdint.h>  // 'uint_x' type definition
 #include <stdbool.h> // 'bool' type definition
 
-#include "NRF24L01_user.h"
-
 /******************************************************************************
  * The following are defines for all of the commands and data masks on the SPI interface.
 ******************************************************************************/
@@ -345,13 +343,15 @@ bool nrf24l01_fifo_tx_empty(void);
 bool nrf24l01_fifo_rx_full(void);
 bool nrf24l01_fifo_rx_empty(void);
 
-//low-level private functions for library use only
-void nrf24l01_transmit(void);
-uint8_t nrf24l01_execute_command(uint8_t instruction, uint8_t *data, unsigned int len, bool copydata);
-void nrf24l01_spi_send_read(uint8_t *data, unsigned int len, bool copydata);
+// GPIO-related functions
+bool nrf24l01_irq_pin_active(void);
+void nrf24l01_clear_ce(void);
+void nrf24l01_set_ce(void);
+bool nrf24l01_ce_pin_active(void);
+void nrf24l01_clear_csn(void);
+void nrf24l01_set_csn(void);
+bool nrf24l01_csn_pin_active(void);
 
-/******************************************************************************
- * IO interface-related functions can be found in nrf24l01_user.c/h
-******************************************************************************/
+uint8_t spi_send_read_byte(uint8_t byte);
 
 #endif /*__NRF24L01_H */

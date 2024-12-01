@@ -6,6 +6,11 @@
 
 #include "nrf24l01.h"
 
+// low-level private functions for library use only
+void nrf24l01_transmit(void);
+uint8_t nrf24l01_execute_command(uint8_t instruction, uint8_t *data, unsigned int len, bool copydata);
+void nrf24l01_spi_send_read(uint8_t *data, unsigned int len, bool copydata);
+
 /******************************************************************************
  * nRF init function
  * Arguments (except opt_rx_standby_mode) fill the actual register they are named after. 

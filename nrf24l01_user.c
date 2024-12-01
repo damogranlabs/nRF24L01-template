@@ -4,104 +4,97 @@
 * Modified: Domen Jurkovic @ https://www.damogranlabs.com
 *****************************************************************************/
 #include "nrf24l01.h"
-#include "nrf24l01_user.h"
 
 /******************************************************************************
- * TODO: Add IRQ pin read function
- * Function must return true if IRQ pin is low, false otherwise
- * 
-******************************************************************************/
+ * TODO IO pin configuration:
+ * User should configure GPIO pins before nRF24 init function.
+ * - CE: GPIO OUT, Push-Pull, high state by default.
+ * - CSN: GPIO OUT, Push-Pull, PULL UP, low state by default.
+ * - IRQ: This is used so that the routines can poll for IRQ or create an ISR.
+ *      - GPIO INPUT, PULL UP: Monitor pin state with (nrf24l01_irq_pin_active)  OR
+ *      - GPIO INPUT, PULL UP: External interrupt on Fallin Edge
+ *      Note: If interrupt pin as external interrupt is used, user should add any of
+ *            "interrupt check/clear functions" to ISR and optionally read/write data.
+ *            For instance, read data with: "nrf24l01_read_rx_payload()".
+ *            Remember to clear interrupt source after it is handled!
+ ******************************************************************************/
+// #include "TODO_your_GPIO_lib.h"
+
+/******************************************************************************
+ * SPI configuration:
+ * User should init SPI driver and SPI pins somewhere in the code before nRF24 init function:
+ *  - 8-bit, MSB-first
+ *  - CPOL=LOW, CPHA=LOW (1 Edge)
+ *  - no hardware NSS/CSN output (CSN pin is handled in software by this library
+ ******************************************************************************/
+// #include "TODO_your_spi_lib.h"
+
+/******************************************************************************
+ * TODO Delay function:
+ * The user must define a function that delays for the specified number of
+ *  microseconds. This function needs to be as precise as possible, and the use
+ *  of a timer module within your microcontroller is highly recommended.
+ * Init delay before nRF init function.
+ *
+ * If your delay function has different name, uncomment #define below and rename
+ *  "custom_name_delay_us". You should also change the include file name below to
+ *  whatever the name of your  delay include file is.
+ ******************************************************************************/
+// #include "TODO_your_delay_us_lib"
+// #define delay_us(microseconds)   custom_name_delay_us(microseconds)
+
+/******************************************************************************
+ * TODO: Return `true` if IRQ pin is low, `false` otherwise.
+ ******************************************************************************/
 bool nrf24l01_irq_pin_active()
 {
-    if (HAL_GPIO_ReadPin(NRF24L01_IRQ_GPIO_Port, NRF24L01_IRQ_Pin) == GPIO_PIN_RESET)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 /******************************************************************************
- * TODO: Add CE pin write function, state = LOW
-******************************************************************************/
+ * TODO: Write low state on CE pin.
+ ******************************************************************************/
 void nrf24l01_clear_ce()
 {
-    HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, GPIO_PIN_RESET); // change write function
 }
 
 /******************************************************************************
- * TODO: Add CE pin write function, state = HIGH
-******************************************************************************/
+ * TODO: Write high state on CE pin.
+ ******************************************************************************/
 void nrf24l01_set_ce()
 {
-    HAL_GPIO_WritePin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin, GPIO_PIN_SET); // change write function
 }
 
 /******************************************************************************
- * TODO: Add CE pin state read function
- * Function must return true if CE is HIGH, false if not.
-******************************************************************************/
+ * TODO: Return `true` if current CE pin state is high, `false` otherwise.
+ ******************************************************************************/
 bool nrf24l01_ce_pin_active()
 {
-    if (HAL_GPIO_ReadPin(NRF24L01_CE_GPIO_Port, NRF24L01_CE_Pin) == GPIO_PIN_SET)
-    { // change read function
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 /******************************************************************************
- * TODO: Add CSN pin write function, state = LOW
-******************************************************************************/
+ * TODO: Write low state on CSN pin.
+ ******************************************************************************/
 void nrf24l01_clear_csn()
 {
-    HAL_GPIO_WritePin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin, GPIO_PIN_RESET); // change write function
 }
 
 /******************************************************************************
- * TODO: Add CSN pin write function, state = HIGH
-******************************************************************************/
+ * TODO: Write high state on CSN pin.
+ ******************************************************************************/
 void nrf24l01_set_csn()
 {
-    HAL_GPIO_WritePin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin, GPIO_PIN_SET); // change write function
 }
 
 /******************************************************************************
- * TODO: Add CSN pin read function
- * Function must return true if CSN is HIGH, false if not.
-******************************************************************************/
+ * TODO: Return `true` if current CSB pin state is high, `false` otherwise.
+ ******************************************************************************/
 bool nrf24l01_csn_pin_active()
 {
-    if (HAL_GPIO_ReadPin(NRF24L01_CSN_GPIO_Port, NRF24L01_CSN_Pin) == GPIO_PIN_SET)
-    { // change read function
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 /******************************************************************************
- * TODO: This function should take the argument uint8_t 'byte' and send it through
- *  the SPI port to the 24L01. Then, it should wait until the 24L01 has returned
- *  its response over SPI. 
- *  Received byte should be the return value of the function.
-******************************************************************************/
+ * TODO: Send given `byte` over chosen SPI interface, wait and return received byte.
+ ******************************************************************************/
 uint8_t spi_send_read_byte(uint8_t byte)
 {
-    uint8_t data_in;
-
-    // implement SPI transmit & receive function (1 byte)
-    if (HAL_SPI_TransmitReceive(&hspi1, &byte, &data_in, 1, SPI_TIMEOUT_VALUE) != HAL_OK)
-    {
-        // report & handle error if needed!
-    }
-
-    return data_in;
 }
