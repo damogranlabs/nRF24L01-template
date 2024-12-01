@@ -5,4 +5,4 @@ Modified by: [Damogran Labs: (damogranlabs.com)](https://damogranlabs.com/2019/0
 ## About
 This is a simple C template for nRF24L01+ RF transceivers, which can be easily ported to any CPU.  
 
-All user-specific code and instructions can be found in *nrf24l01_user.c* file. 
+All user-specific code and config instructions can be found in *nrf24l01_user.c* file.

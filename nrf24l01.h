@@ -1,8 +1,8 @@
 /******************************************************************************
-* File: nrf24l01.h
-* Original source: S. Brennen Ball, 2006-2007 @ http://blog.diyembedded.com/
-* Modified: Domen Jurkovic @ https://www.damogranlabs.com
-*****************************************************************************/
+ * Original source: S. Brennen Ball, 2006-2007 @ http://blog.diyembedded.com/
+ * Modified: Domen Jurkovic @ https://www.damogranlabs.com
+ *****************************************************************************/
+
 #ifndef __NRF24L01_H
 #define __NRF24L01_H
 
