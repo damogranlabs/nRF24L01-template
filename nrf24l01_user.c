@@ -30,18 +30,16 @@
 // #include "TODO_your_spi_lib.h"
 
 /******************************************************************************
- * TODO Delay function:
- * The user must define a function that delays for the specified number of
- *  microseconds. This function needs to be as precise as possible, and the use
- *  of a timer module within your microcontroller is highly recommended.
+ * TODO Microsecond delay function.
+ * User must define a function that delays for the specified number of
+ * microseconds. This function needs to be as precise as possible, and the use
+ * of a timer module within your microcontroller is highly recommended.
  * Init delay before nRF init function.
- *
- * If your delay function has different name, uncomment #define below and rename
- *  "custom_name_delay_us". You should also change the include file name below to
- *  whatever the name of your  delay include file is.
  ******************************************************************************/
 // #include "TODO_your_delay_us_lib"
-// #define delay_us(microseconds)   custom_name_delay_us(microseconds)
+inline void nrf24l01_delay_us(uint32_t microseconds)
+{
+}
 
 /******************************************************************************
  * TODO: Return `true` if IRQ pin is low, `false` otherwise.

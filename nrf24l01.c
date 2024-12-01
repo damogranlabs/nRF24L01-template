@@ -2,8 +2,9 @@
  * Original source: S. Brennen Ball, 2006-2007 @ http://blog.diyembedded.com/
  * Modified: Domen Jurkovic @ https://www.damogranlabs.com
  *****************************************************************************/
-
 #include "nrf24l01.h"
+
+#define NULL ((void *)0)
 
 // low-level private functions for library use only
 void nrf24l01_transmit(void);
@@ -12,21 +13,21 @@ void nrf24l01_spi_send_read(uint8_t *data, unsigned int len, bool copydata);
 
 /******************************************************************************
  * nRF init function
- * Arguments (except opt_rx_standby_mode) fill the actual register they are named after. 
+ * Arguments (except opt_rx_standby_mode) fill the actual register they are named after.
  *  Registers that do not need to be initialized are not included here.
- * 
+ *
  * The argument opt_rx_active_mode is only used if the user is initializing the
  *  24L01 as a receiver.  If the argument is false, the receiver will remain in
  *  standby mode and not monitor for packets.  If the argument is true, the CE
  *  pin will be set and the 24L01 will monitor for packets.  In TX mode, the value
  *  of this argument is insignificant.
- * 
+ *
  * If the user wants to leave any 1-byte register in its default state, simply put
  *  as that register's argument nrf24l01_<reg>_DEFAULT_VAL, where <reg> is the register name.
- * 
- * If the user wants to leave any of the 5-byte registers RX_ADDR_P0, RX_ADDR_P1, or 
+ *
+ * If the user wants to leave any of the 5-byte registers RX_ADDR_P0, RX_ADDR_P1, or
  *  TX_ADDR in its default state, simply put NULL in the argument for that address value.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_initialize(uint8_t config,
                          uint8_t opt_rx_active_mode,
                          uint8_t en_aa,
@@ -146,15 +147,15 @@ void nrf24l01_initialize(uint8_t config,
 /******************************************************************************
  * Initializes the nRF24L01 to all default values except the PWR_UP and PRIM_RX bits.
  *  This function also disables the auto-ack feature on the chip (EN_AA register is 0).
- * 
+ *
  * If 'rx' is true, the device will be a receiver and transmitter otherwise.
- * 
- * 'payload_width' is the payload width for pipe 0.  All other pipes are left 
+ *
+ * 'payload_width' is the payload width for pipe 0.  All other pipes are left
  *  in their default (disabled) state.
- * 
+ *
  * 'enable_auto_ack' controls the auto ack feature on pipe 0. If true, auto-ack will
  *  be enabled. If false, auto-ack is disabled.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_initialize_debug(bool rx, uint8_t p0_payload_width, bool enable_auto_ack)
 {
     uint8_t config;
@@ -202,14 +203,14 @@ void nrf24l01_initialize_debug(bool rx, uint8_t p0_payload_width, bool enable_au
  * Initializes only the CONFIG register and pipe 0's payload width.
  *  The primary purpose of this function is to allow users with microcontrollers with
  *  extremely small program memories to still be able to init their 24L01. This code
- *  should have a smaller footprint than the above init functions. When using this method, 
- *  the 24L01 MUST have its default configuration loaded in all registers to work. 
- *  It is recommended that the device be reset or have its power cycled immediately 
+ *  should have a smaller footprint than the above init functions. When using this method,
+ *  the 24L01 MUST have its default configuration loaded in all registers to work.
+ *  It is recommended that the device be reset or have its power cycled immediately
  *  before this code is run.
- * 
+ *
  * In normal circumstances, the user should use nrf24l01_initialize() rather than this
  *  function, since this function does not set all of the register values.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_initialize_debug_lite(bool rx, uint8_t p0_payload_width)
 {
     uint8_t config;
@@ -228,18 +229,18 @@ void nrf24l01_initialize_debug_lite(bool rx, uint8_t p0_payload_width)
 /******************************************************************************
  * Powers up the 24L01 with all necessary delays.
  * This function takes the existing contents of the CONFIG register and sets the PWR_UP
- *  the argument rx_active_mode is only used if the user is setting up the 
- *  24L01 as a receiver. 
- * 
- * If the 'rx_active_mode' is false, the receiver will remain in 
+ *  the argument rx_active_mode is only used if the user is setting up the
+ *  24L01 as a receiver.
+ *
+ * If the 'rx_active_mode' is false, the receiver will remain in
  *  standby mode and not monitor for packets. If the argument is true, the CE
  *  pin will be set and the 24L01 will monitor for packets.
- * 
- * In TX mode, the value of this argument is insignificant. 
- * 
+ *
+ * In TX mode, the value of this argument is insignificant.
+ *
  * If the read value of the CONFIG register already has the PWR_UP bit set,
  *  this function exits in order to not make an unecessary register write.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_power_up(bool rx_active_mode)
 {
     uint8_t config;
@@ -253,7 +254,7 @@ void nrf24l01_power_up(bool rx_active_mode)
 
     config |= NRF24L01_CONFIG_PWR_UP;
     nrf24l01_write_register(NRF24L01_CONFIG, &config, 1);
-    delay_us(1500);
+    nrf24l01_delay_us(1500);
 
     if ((config & NRF24L01_CONFIG_PRIM_RX) == 0)
     {
@@ -271,23 +272,24 @@ void nrf24l01_power_up(bool rx_active_mode)
         }
     }
 }
+
 /******************************************************************************
  * Powers up the 24L01 with all necessary delays.
  * This function allows the user to set the contents of the CONFIG register, but the function
  * sets the PWR_UP bit in the CONFIG register, so the user does not need to.
- * 
+ *
  * 'rx_active_mode' is only used if the user is setting up the 24L01 as a receiver.
  *  If the argument is false, the receiver will remain in standby mode and not monitor for packets.
- *  If the argument is true, the CE pin will be set and the 24L01 will monitor for packets.  
- * 
+ *  If the argument is true, the CE pin will be set and the 24L01 will monitor for packets.
+ *
  * In TX mode, the value of this argument is insignificant.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_power_up_param(bool rx_active_mode, uint8_t config)
 {
     config |= NRF24L01_CONFIG_PWR_UP;
 
     nrf24l01_write_register(NRF24L01_CONFIG, &config, 1);
-    delay_us(1500);
+    nrf24l01_delay_us(1500);
 
     if ((config & NRF24L01_CONFIG_PRIM_RX) == 0)
     {
@@ -310,10 +312,10 @@ void nrf24l01_power_up_param(bool rx_active_mode, uint8_t config)
  * Powers down the 24L01
  * This function takes the existing contents of the CONFIG register and simply
  *  clears the PWR_UP bit in the CONFIG register.
- * 
- * If the read value of the CONFIG register already has the PWR_UP bit cleared, this 
+ *
+ * If the read value of the CONFIG register already has the PWR_UP bit cleared, this
  *  function exits in order to not make an unecessary register write.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_power_down()
 {
     uint8_t config;
@@ -335,7 +337,7 @@ void nrf24l01_power_down()
  * Powers down the 24L01
  * This function allows the user to set the contents of the CONFIG register, but the function
  *  clears the PWR_UP bit in the CONFIG register, so the user does not need to.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_power_down_param(uint8_t config)
 {
     config &= (~NRF24L01_CONFIG_PWR_UP);
@@ -346,26 +348,18 @@ void nrf24l01_power_down_param(uint8_t config)
 
 /******************************************************************************
  * Sets up the 24L01 as a receiver with all necessary delays.
- * This function takes the existing contents of the CONFIG register and sets the PRIM_RX 
- * bit in the CONFIG register. 
- * 
- * If the 'rx_active_mode' is false, the receiver will remain in standby mode and not monitor for packets.  
+ * This function takes the existing contents of the CONFIG register and sets the PRIM_RX
+ * bit in the CONFIG register.
+ *
+ * If the 'rx_active_mode' is false, the receiver will remain in standby mode and not monitor for packets.
  * If the argument is true, the CE pin will be set and the 24L01 will monitor for packets.
- * 
- * If the read value of the CONFIG register already has the PRIM_RX bit set, this function 
+ *
+ * If the read value of the CONFIG register already has the PRIM_RX bit set, this function
  * exits in order to not make an unecessary register write.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_as_rx(bool rx_active_mode)
 {
-    uint8_t config;
-    //uint8_t status = nrf24l01_read_register(0, &config, 1);
-
-    if ((config & NRF24L01_CONFIG_PRIM_RX) != 0)
-    {
-        return;
-    }
-
-    config |= NRF24L01_CONFIG_PRIM_RX;
+    uint8_t config = NRF24L01_CONFIG_PRIM_RX;
     nrf24l01_write_register(NRF24L01_CONFIG, &config, 1);
 
     if (rx_active_mode != false)
@@ -382,10 +376,10 @@ void nrf24l01_set_as_rx(bool rx_active_mode)
  * Sets up the 24L01 as a receiver with all necessary delays.
  * This function allows the user to set the contents of the CONFIG register, but the function
  *  sets the PRIM_RX bit in the CONFIG register, so the user does not need to.
- * 
- * If the 'rx_active_mode' is false, the receiver will remain in standby mode and not monitor for packets.  
+ *
+ * If the 'rx_active_mode' is false, the receiver will remain in standby mode and not monitor for packets.
  * If the argument is true, the CE pin will be set and the 24L01 will monitor for packets.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_as_rx_param(bool rx_active_mode, uint8_t config)
 {
     config |= NRF24L01_CONFIG_PRIM_RX;
@@ -401,7 +395,7 @@ void nrf24l01_set_as_rx_param(bool rx_active_mode, uint8_t config)
 
 /******************************************************************************
  * Takes a 24L01 that is already in RX standby mode and puts it in active RX mode
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_rx_standby_to_active()
 {
     nrf24l01_set_ce();
@@ -409,7 +403,7 @@ void nrf24l01_rx_standby_to_active()
 
 /******************************************************************************
  * Takes a 24L01 that is already in active RX mode and puts it in RX standy mode
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_rx_active_to_standby()
 {
     nrf24l01_clear_ce();
@@ -419,10 +413,10 @@ void nrf24l01_rx_active_to_standby()
  * Sets up the 24L01 as a transmitter
  * This function takes the existing contents of the CONFIG register and simply
  *  clears the PRIM_RX bit in the CONFIG register.
- * 
+ *
  * If the read value of the CONFIG register already has the PRIM_RX bit cleared, this function
  *  exits in order to not make an unecessary register write.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_as_tx()
 {
     uint8_t config;
@@ -444,7 +438,7 @@ void nrf24l01_set_as_tx()
  * Sets up the 24L01 as a transmitter
  * This function allows the user to set the contents of the CONFIG register, but the function
  *  clears the PRIM_RX bit in the CONFIG register, so the user does not need to.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_as_tx_param(uint8_t config)
 {
     config &= ~(NRF24L01_CONFIG_PRIM_RX);
@@ -462,16 +456,16 @@ void nrf24l01_set_as_tx_param(uint8_t config)
  * Executes the W_REGISTER SPI operation
  * 'regnumber' indicates the register number assigned by the nrf24l01 specification.
  *  For regnumber values, see section titled "register definitions" in nrf24l01.h.
- * 
- * 'data' should be of size 1 for all register writes except for RX_ADDR_P0, RX_ADDR_P1, and TX_ADDR. 
+ *
+ * 'data' should be of size 1 for all register writes except for RX_ADDR_P0, RX_ADDR_P1, and TX_ADDR.
  *  The size of data should be set according to the user-specified size of the address
  *  length for the register the address is being sent to.
- * 
- * 'len' is always the size of uint8_t * data. 
+ *
+ * 'len' is always the size of uint8_t * data.
  *  For example, if data is declared as data[6], len should equal 6.
- * 
+ *
  * Returns the value of the STATUS register.
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_write_register(uint8_t regnumber, uint8_t *data, unsigned int len)
 {
     return nrf24l01_execute_command(NRF24L01_W_REGISTER | (regnumber & NRF24L01_W_REGISTER_DATA), data, len, false);
@@ -481,16 +475,16 @@ uint8_t nrf24l01_write_register(uint8_t regnumber, uint8_t *data, unsigned int l
  * Executes the R_REGISTER SPI operation
  * 'regnumber' indicates the register number assigned by the nrf24l01 specification.
  *  For regnumber values, see section titled "register definitions" in nrf24l01.h.
- * 
+ *
  * 'data' should be of size 1 for all register writes except for RX_ADDR_P0, RX_ADDR_P1 and TX_ADDR.
- *  The size of data should be set according to the user-specified size of the address 
+ *  The size of data should be set according to the user-specified size of the address
  *  length for the register the address is being read from.
- * 
- * 'len' is always the size of uint8_t * data. 
+ *
+ * 'len' is always the size of uint8_t * data.
  *  For example, if data is declared as data[6], len = 6.
- * 
+ *
  * Returns the value of the STATUS register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_read_register(uint8_t regnumber, uint8_t *data, unsigned int len)
 {
     return nrf24l01_execute_command(regnumber & NRF24L01_R_REGISTER_DATA, data, len, true);
@@ -499,15 +493,15 @@ uint8_t nrf24l01_read_register(uint8_t regnumber, uint8_t *data, unsigned int le
 /******************************************************************************
  * Executes the W_TX_PAYLOAD operation
  * 'data' is the actual payload to be sent to the nrf24l01.
- * 
+ *
  * 'len' is the length of the payload being sent (this should be sized
  *  according to the payload length specified by the receiving nrf24l01).
- * 
+ *
  * If 'transmit' is true, the nrf24l01 immediately transmits the data in the payload.
  * If false, the user must use the nrf24l01_transmit() function to send the payload.
- * 
+ *
  * Returns the value of the STATUS register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_write_tx_payload(uint8_t *data, unsigned int len, bool transmit)
 {
     uint8_t status;
@@ -526,12 +520,12 @@ uint8_t nrf24l01_write_tx_payload(uint8_t *data, unsigned int len, bool transmit
  * 'data' is the actual payload that has been received by the nrf24l01.
  *  The user must size data according to the payload width specified to the nrf24l01.
  *  This variable is filled by this function, so individual byte values need not be initialized by the user.
- * 
+ *
  * 'len' is the length of the payload being clocked out of the nrf24l01 (this should be
  *  sized according to the payload length specified to the nrf24l01).
- * 
+ *
  * Returns the value of the STATUS register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_read_rx_payload(uint8_t *data, unsigned int len)
 {
     uint8_t status;
@@ -546,9 +540,9 @@ uint8_t nrf24l01_read_rx_payload(uint8_t *data, unsigned int len)
 /******************************************************************************
  * Executes the FLUSH_TX SPI operation
  * This funciton empties the contents of the TX FIFO
- * 
+ *
  * Returns the value of the STATUS register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_flush_tx()
 {
     return nrf24l01_execute_command(NRF24L01_FLUSH_TX, NULL, 0, true);
@@ -557,9 +551,9 @@ uint8_t nrf24l01_flush_tx()
 /******************************************************************************
  * Executes the FLUSH_RX SPI operation
  * This funciton empties the contents of the RX FIFO
- * 
+ *
  * Returns the value of the STATUS register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_flush_rx()
 {
     return nrf24l01_execute_command(NRF24L01_FLUSH_RX, NULL, 0, true);
@@ -568,9 +562,9 @@ uint8_t nrf24l01_flush_rx()
 /******************************************************************************
  * Executes the REUSE_TX_PL SPI operation
  * This funciton allows the user to constantly send a packet repeatedly when issued.
- * 
+ *
  * Returns the value of the STATUS register
-*******************************************************************************/
+ *******************************************************************************/
 uint8_t nrf24l01_reuse_tx_pl()
 {
     return nrf24l01_execute_command(NRF24L01_REUSE_TX_PL, NULL, 0, true);
@@ -579,9 +573,9 @@ uint8_t nrf24l01_reuse_tx_pl()
 /******************************************************************************
  * Executes the FLUSH_TX SPI operation
  * This funciton does nothing
- * 
+ *
  * Returns the value of the STATUS register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_nop()
 {
     return nrf24l01_execute_command(NRF24L01_NOP, NULL, 0, true);
@@ -589,22 +583,22 @@ uint8_t nrf24l01_nop()
 
 /******************************************************************************
  * Transmits the current tx payload
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_transmit()
 {
     nrf24l01_set_ce();
-    delay_us(10);
+    nrf24l01_delay_us(10);
     nrf24l01_clear_ce();
 }
 
 /******************************************************************************
  * Sets the TX address in the TX_ADDR register
- * Address is the actual address to be used.  It should be sized according to the 
+ * Address is the actual address to be used.  It should be sized according to the
  *  'tx_addr' length specified to the nrf24l01.
- * 
- * 'len' is the length of the address. Its value should be specified according to the 
+ *
+ * 'len' is the length of the address. Its value should be specified according to the
  *  'tx_addr' length specified to the nrf24l01.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_tx_addr(uint8_t *address, unsigned int len)
 {
     nrf24l01_write_register(NRF24L01_TX_ADDR, address, len);
@@ -612,15 +606,15 @@ void nrf24l01_set_tx_addr(uint8_t *address, unsigned int len)
 
 /******************************************************************************
  * Sets the RX address in the RX_ADDR register that is offset by 'rxpipenum'
- * 'address' is the actual address to be used. It should be sized according to 
+ * 'address' is the actual address to be used. It should be sized according to
  *  the 'rx_addr' length that is being filled.
- * 
- * 'len' is the length of the address. Its value should be specified according to 
+ *
+ * 'len' is the length of the address. Its value should be specified according to
  *  the 'rx_addr' length specified to the nrf24l01.
- * 
+ *
  * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *   If an invalid address (greater than five) is supplied, the function does nothing.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_rx_addr(uint8_t *address, unsigned int len, uint8_t rxpipenum)
 {
     if (rxpipenum > 5)
@@ -634,12 +628,12 @@ void nrf24l01_set_rx_addr(uint8_t *address, unsigned int len, uint8_t rxpipenum)
 /******************************************************************************
  * Sets the RX payload width on the pipe offset by 'rxpipenum'
  * 'payloadwidth' is the length of the payload for the pipe referenced in 'rxpipenum'.
- *  It must be less than or equal to 32.  If an invalid payload width is specified, 
+ *  It must be less than or equal to 32.  If an invalid payload width is specified,
  *  the function does nothing.
- * 
+ *
  * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *  If an invalid address (greater than five) is supplied, the function does nothing.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_rx_pw(uint8_t payloadwidth, uint8_t rxpipenum)
 {
     if ((rxpipenum > 5) || (payloadwidth > 32))
@@ -654,7 +648,7 @@ void nrf24l01_set_rx_pw(uint8_t payloadwidth, uint8_t rxpipenum)
  * Gets the RX payload width on the pipe offset by 'rxpipenum'
  * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *  If an invalid address (greater than five) is supplied, the function does nothing.
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_rx_pw(uint8_t rxpipenum)
 {
     uint8_t data;
@@ -669,7 +663,7 @@ uint8_t nrf24l01_get_rx_pw(uint8_t rxpipenum)
 
 /******************************************************************************
  * Returns the value of the CONFIG register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_config()
 {
     uint8_t data;
@@ -681,7 +675,7 @@ uint8_t nrf24l01_get_config()
 
 /******************************************************************************
  * Sets the value of the CONFIG register
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_config(uint8_t config)
 {
     nrf24l01_write_register(NRF24L01_CONFIG, &config, 1);
@@ -689,7 +683,7 @@ void nrf24l01_set_config(uint8_t config)
 
 /******************************************************************************
  * Returns the current RF channel in RF_CH register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_rf_ch()
 {
     uint8_t data;
@@ -701,7 +695,7 @@ uint8_t nrf24l01_get_rf_ch()
 
 /******************************************************************************
  * uint8_t channel is the channel to be changed to.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_set_rf_ch(uint8_t channel)
 {
     uint8_t data;
@@ -713,7 +707,7 @@ void nrf24l01_set_rf_ch(uint8_t channel)
 
 /******************************************************************************
  * Returns the value of the OBSERVE_TX register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_observe_tx()
 {
     uint8_t data;
@@ -725,7 +719,7 @@ uint8_t nrf24l01_get_observe_tx()
 
 /******************************************************************************
  * Returns the current PLOS_CNT value in OBSERVE_TX register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_plos_cnt()
 {
     uint8_t data;
@@ -739,7 +733,7 @@ uint8_t nrf24l01_get_plos_cnt()
  * Clears the PLOS_CNT field of the OBSERVE_TX register
  * This function makes a read of the current value of RF_CH and
  *  simply writes it back to the register, clearing PLOS_CNT
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_clear_plos_cnt()
 {
     uint8_t data;
@@ -750,9 +744,9 @@ void nrf24l01_clear_plos_cnt()
 
 /******************************************************************************
  * Clears the PLOS_CNT field of the OBSERVE_TX register
- * This function allows the user to set the RF_CH register by using the argument 
+ * This function allows the user to set the RF_CH register by using the argument
  *  in the function during the PLOS_CNT clearing process
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_clear_plos_cnt_param(uint8_t rf_ch)
 {
     nrf24l01_write_register(NRF24L01_RF_CH, &rf_ch, 1);
@@ -760,7 +754,7 @@ void nrf24l01_clear_plos_cnt_param(uint8_t rf_ch)
 
 /******************************************************************************
  * Returns the current ARC_CNT value in OBSERVE_TX register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_arc_cnt()
 {
     uint8_t data;
@@ -772,9 +766,9 @@ uint8_t nrf24l01_get_arc_cnt()
 
 /******************************************************************************
  * Returns true if auto-ack is enabled on the pipe that is offset by rxpipenum
- * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.  
+ * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *   If an invalid address (greater than five) is supplied, the function returns false.
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_aa_enabled(uint8_t rxpipenum)
 {
     uint8_t data;
@@ -793,7 +787,7 @@ bool nrf24l01_aa_enabled(uint8_t rxpipenum)
  * Enables auto-ack is enabled on the pipe that is offset by rxpipenum
  * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *   If an invalid address (greater than five) is supplied, the function returns false.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_aa_enable(uint8_t rxpipenum)
 {
     uint8_t data;
@@ -817,7 +811,7 @@ void nrf24l01_aa_enable(uint8_t rxpipenum)
  * Disables auto-ack is enabled on the pipe that is offset by rxpipenum
  * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *   If an invalid address (greater than five) is supplied, the function returns false.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_aa_disable(uint8_t rxpipenum)
 {
     uint8_t data;
@@ -839,7 +833,7 @@ void nrf24l01_aa_disable(uint8_t rxpipenum)
  * Returns true if the pipe is enabled that is offset by rxpipenum
  * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *  If an invalid address (greater than five) is supplied, the function returns false.
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_rx_pipe_enabled(uint8_t rxpipenum)
 {
     uint8_t data;
@@ -857,7 +851,7 @@ bool nrf24l01_rx_pipe_enabled(uint8_t rxpipenum)
  * Enables the pipe that is offset by 'rxpipenum'
  * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *  If an invalid address (greater than five) is supplied, the function does nothing.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_rx_pipe_enable(uint8_t rxpipenum)
 {
     uint8_t data;
@@ -881,7 +875,7 @@ void nrf24l01_rx_pipe_enable(uint8_t rxpipenum)
  * Disables the pipe that is offset by 'rxpipenum'
  * 'rxpipenum' is the pipe number (zero to five) whose address is being specified.
  *  If an invalid address (greater than five) is supplied, the function does nothing.
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_rx_pipe_disable(uint8_t rxpipenum)
 {
     uint8_t data;
@@ -903,7 +897,7 @@ void nrf24l01_rx_pipe_disable(uint8_t rxpipenum)
 
 /******************************************************************************
  * Returns the status of the CD register (true if carrier detect [CD] is active, false if not).
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_cd_active()
 {
     uint8_t data;
@@ -915,7 +909,7 @@ bool nrf24l01_cd_active()
 
 /******************************************************************************
  * Returns the value of the FIFO_STATUS register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_fifo_status()
 {
     uint8_t data;
@@ -927,7 +921,7 @@ uint8_t nrf24l01_get_fifo_status()
 
 /******************************************************************************
  * Return the value of the status register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_status()
 {
     return nrf24l01_nop();
@@ -935,7 +929,7 @@ uint8_t nrf24l01_get_status()
 
 /******************************************************************************
  * Returns true if TX_REUSE bit in FIFO_STATUS register is set, false otherwise
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_fifo_tx_reuse()
 {
     uint8_t data;
@@ -947,7 +941,7 @@ bool nrf24l01_fifo_tx_reuse()
 
 /******************************************************************************
  * Returns true if TX_FULL bit in FIFO_STATUS register is set, false otherwise
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_fifo_tx_full()
 {
     uint8_t data;
@@ -959,7 +953,7 @@ bool nrf24l01_fifo_tx_full()
 
 /******************************************************************************
  * Returns true if TX_EMPTY bit in FIFO_STATUS register is set, false otherwise
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_fifo_tx_empty()
 {
     uint8_t data;
@@ -971,7 +965,7 @@ bool nrf24l01_fifo_tx_empty()
 
 /******************************************************************************
  * Returns true if RX_FULL bit in FIFO_STATUS register is set, false otherwise
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_fifo_rx_full()
 {
     uint8_t data;
@@ -983,7 +977,7 @@ bool nrf24l01_fifo_rx_full()
 
 /******************************************************************************
  * Returns true if RX_EMPTYE bit in FIFO_STATUS register is set, false otherwise
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_fifo_rx_empty()
 {
     uint8_t data;
@@ -995,7 +989,7 @@ bool nrf24l01_fifo_rx_empty()
 
 /******************************************************************************
  * Returns true if RX_DR interrupt is active, false otherwise
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_irq_rx_dr_active()
 {
     return (nrf24l01_get_status() & NRF24L01_STATUS_RX_DR);
@@ -1003,7 +997,7 @@ bool nrf24l01_irq_rx_dr_active()
 
 /******************************************************************************
  * Returns true if TX_DS interrupt is active, false otherwise
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_irq_tx_ds_active()
 {
     return (nrf24l01_get_status() & NRF24L01_STATUS_TX_DS);
@@ -1011,7 +1005,7 @@ bool nrf24l01_irq_tx_ds_active()
 
 /******************************************************************************
  * Returns true if MAX_RT interrupt is active, false otherwise
-******************************************************************************/
+ ******************************************************************************/
 bool nrf24l01_irq_max_rt_active()
 {
     return (nrf24l01_get_status() & NRF24L01_STATUS_MAX_RT);
@@ -1019,7 +1013,7 @@ bool nrf24l01_irq_max_rt_active()
 
 /******************************************************************************
  * Clear all interrupts in the status register
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_irq_clear_all()
 {
     uint8_t data = NRF24L01_STATUS_RX_DR | NRF24L01_STATUS_TX_DS | NRF24L01_STATUS_MAX_RT;
@@ -1029,7 +1023,7 @@ void nrf24l01_irq_clear_all()
 
 /******************************************************************************
  * Clears only the RX_DR interrupt
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_irq_clear_rx_dr()
 {
     uint8_t data = NRF24L01_STATUS_RX_DR;
@@ -1039,7 +1033,7 @@ void nrf24l01_irq_clear_rx_dr()
 
 /******************************************************************************
  * Clears only the TX_DS interrupt
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_irq_clear_tx_ds()
 {
     uint8_t data = NRF24L01_STATUS_TX_DS;
@@ -1049,7 +1043,7 @@ void nrf24l01_irq_clear_tx_ds()
 
 /******************************************************************************
  * Clears only the MAX_RT interrupt
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_irq_clear_max_rt()
 {
     uint8_t data = NRF24L01_STATUS_MAX_RT;
@@ -1059,7 +1053,7 @@ void nrf24l01_irq_clear_max_rt()
 
 /******************************************************************************
  * Returns the current pipe in the 24L01's STATUS register
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_get_rx_pipe()
 {
     return nrf24l01_get_rx_pipe_from_status(nrf24l01_get_status());
@@ -1072,7 +1066,7 @@ uint8_t nrf24l01_get_rx_pipe_from_status(uint8_t status)
 
 /******************************************************************************
  * Flush both fifos and clear interrupts
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_clear_flush()
 {
     nrf24l01_flush_rx();
@@ -1083,7 +1077,7 @@ void nrf24l01_clear_flush()
 /******************************************************************************
  * Get all register values.
  * 'data' must be at least 35 bytes long
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_get_all_registers(uint8_t *data)
 {
     unsigned int outer;
@@ -1110,7 +1104,7 @@ void nrf24l01_get_all_registers(uint8_t *data)
 /******************************************************************************
  * Low-level spi send function for library use
  * User should not call this function directly, but rather use one of the 8 SPI data instructions
-******************************************************************************/
+ ******************************************************************************/
 uint8_t nrf24l01_execute_command(uint8_t instruction, uint8_t *data, unsigned int len, bool copydata)
 {
     uint8_t status;
@@ -1129,7 +1123,7 @@ uint8_t nrf24l01_execute_command(uint8_t instruction, uint8_t *data, unsigned in
 /******************************************************************************
  * Low-level spi send function for library use
  * User should not call this function directly, but rather use one of the 8 SPI data instructions
-******************************************************************************/
+ ******************************************************************************/
 void nrf24l01_spi_send_read(uint8_t *data, unsigned int len, bool copydata)
 {
     unsigned int count;

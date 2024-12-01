@@ -11,8 +11,8 @@
 
 /******************************************************************************
  * The following are defines for all of the commands and data masks on the SPI interface.
-******************************************************************************/
-//SPI command defines
+ ******************************************************************************/
+// SPI command defines
 #define NRF24L01_R_REGISTER 0x00
 #define NRF24L01_W_REGISTER 0x20
 #define NRF24L01_R_RX_PAYLOAD 0x61
@@ -22,13 +22,13 @@
 #define NRF24L01_REUSE_TX_PL 0xE3
 #define NRF24L01_NOP 0xFF
 
-//SPI command data mask defines
+// SPI command data mask defines
 #define NRF24L01_R_REGISTER_DATA 0x1F
 #define NRF24L01_W_REGISTER_DATA 0x1F
 
 /******************************************************************************
  * Register definitions for each register's address in the 24L01.
-******************************************************************************/
+ ******************************************************************************/
 #define NRF24L01_CONFIG 0x00
 #define NRF24L01_EN_AA 0x01
 #define NRF24L01_EN_RXADDR 0x02
@@ -56,8 +56,8 @@
 
 /******************************************************************************
  * Below are the defines for each register's default value in the 24L01.
- * Multi-byte registers use notation B<X>, where "B" represents "byte" and <X> is the byte number. 
-******************************************************************************/
+ * Multi-byte registers use notation B<X>, where "B" represents "byte" and <X> is the byte number.
+ ******************************************************************************/
 #define NRF24L01_CONFIG_DEFAULT_VAL 0x08
 #define NRF24L01_EN_AA_DEFAULT_VAL 0x3F
 #define NRF24L01_EN_RXADDR_DEFAULT_VAL 0x03
@@ -97,7 +97,7 @@
 
 /******************************************************************************
  * Below are the defines for each register's bitwise fields in the 24L01.
-******************************************************************************/
+ ******************************************************************************/
 #define NRF24L01_CONFIG_RESERVED 0x80
 #define NRF24L01_CONFIG_MASK_RX_DR 0x40
 #define NRF24L01_CONFIG_MASK_TX_DS 0x20
@@ -107,7 +107,7 @@
 #define NRF24L01_CONFIG_PWR_UP 0x02
 #define NRF24L01_CONFIG_PRIM_RX 0x01
 
-//EN_AA register bitwise definitions
+// EN_AA register bitwise definitions
 #define NRF24L01_EN_AA_RESERVED 0xC0
 #define NRF24L01_EN_AA_ENAA_ALL 0x3F
 #define NRF24L01_EN_AA_ENAA_P5 0x20
@@ -118,7 +118,7 @@
 #define NRF24L01_EN_AA_ENAA_P0 0x01
 #define NRF24L01_EN_AA_ENAA_NONE 0x00
 
-//EN_RXADDR register bitwise definitions
+// EN_RXADDR register bitwise definitions
 #define NRF24L01_EN_RXADDR_RESERVED 0xC0
 #define NRF24L01_EN_RXADDR_ERX_ALL 0x3F
 #define NRF24L01_EN_RXADDR_ERX_P5 0x20
@@ -129,7 +129,7 @@
 #define NRF24L01_EN_RXADDR_ERX_P0 0x01
 #define NRF24L01_EN_RXADDR_ERX_NONE 0x00
 
-//SETUP_AW register bitwise definitions
+// SETUP_AW register bitwise definitions
 #define NRF24L01_SETUP_AW_RESERVED 0xFC
 #define NRF24L01_SETUP_AW 0x03
 #define NRF24L01_SETUP_AW_5BYTES 0x03
@@ -137,7 +137,7 @@
 #define NRF24L01_SETUP_AW_3BYTES 0x01
 #define NRF24L01_SETUP_AW_ILLEGAL 0x00
 
-//SETUP_RETR register bitwise definitions
+// SETUP_RETR register bitwise definitions
 #define NRF24L01_SETUP_RETR_ARD 0xF0
 #define NRF24L01_SETUP_RETR_ARD_4000 0xF0
 #define NRF24L01_SETUP_RETR_ARD_3750 0xE0
@@ -173,10 +173,10 @@
 #define NRF24L01_SETUP_RETR_ARC_1 0x01
 #define NRF24L01_SETUP_RETR_ARC_0 0x00
 
-//RF_CH register bitwise definitions
+// RF_CH register bitwise definitions
 #define NRF24L01_RF_CH_RESERVED 0x80
 
-//RF_SETUP register bitwise definitions
+// RF_SETUP register bitwise definitions
 #define NRF24L01_RF_SETUP_RESERVED 0xE0
 #define NRF24L01_RF_SETUP_PLL_LOCK 0x10
 #define NRF24L01_RF_SETUP_RF_DR 0x08
@@ -187,7 +187,7 @@
 #define NRF24L01_RF_SETUP_RF_PWR_18 0x00
 #define NRF24L01_RF_SETUP_LNA_HCURR 0x01
 
-//STATUS register bitwise definitions
+// STATUS register bitwise definitions
 #define NRF24L01_STATUS_RESERVED 0x80
 #define NRF24L01_STATUS_RX_DR 0x40
 #define NRF24L01_STATUS_TX_DS 0x20
@@ -203,36 +203,36 @@
 #define NRF24L01_STATUS_RX_P_NO_0 0x00
 #define NRF24L01_STATUS_TX_FULL 0x01
 
-//OBSERVE_TX register bitwise definitions
+// OBSERVE_TX register bitwise definitions
 #define NRF24L01_OBSERVE_TX_PLOS_CNT 0xF0
 #define NRF24L01_OBSERVE_TX_ARC_CNT 0x0F
 
-//CD register bitwise definitions
+// CD register bitwise definitions
 #define NRF24L01_CD_RESERVED 0xFE
 #define NRF24L01_CD_CD 0x01
 
-//RX_PW_P0 register bitwise definitions
+// RX_PW_P0 register bitwise definitions
 #define NRF24L01_RX_PW_P0_RESERVED 0xC0
 
-//RX_PW_P0 register bitwise definitions
+// RX_PW_P0 register bitwise definitions
 #define NRF24L01_RX_PW_P0_RESERVED 0xC0
 
-//RX_PW_P1 register bitwise definitions
+// RX_PW_P1 register bitwise definitions
 #define NRF24L01_RX_PW_P1_RESERVED 0xC0
 
-//RX_PW_P2 register bitwise definitions
+// RX_PW_P2 register bitwise definitions
 #define NRF24L01_RX_PW_P2_RESERVED 0xC0
 
-//RX_PW_P3 register bitwise definitions
+// RX_PW_P3 register bitwise definitions
 #define NRF24L01_RX_PW_P3_RESERVED 0xC0
 
-//RX_PW_P4 register bitwise definitions
+// RX_PW_P4 register bitwise definitions
 #define NRF24L01_RX_PW_P4_RESERVED 0xC0
 
-//RX_PW_P5 register bitwise definitions
+// RX_PW_P5 register bitwise definitions
 #define NRF24L01_RX_PW_P5_RESERVED 0xC0
 
-//FIFO_STATUS register bitwise definitions
+// FIFO_STATUS register bitwise definitions
 #define NRF24L01_FIFO_STATUS_RESERVED 0x8C
 #define NRF24L01_FIFO_STATUS_TX_REUSE 0x40
 #define NRF24L01_FIFO_STATUS_TX_FULL 0x20
@@ -243,8 +243,8 @@
 /******************************************************************************
  * Below are all function definitions contained in the library.
  * Please see nrf24l01.c for comments regarding the usage of each function.
-******************************************************************************/
-//initialization functions
+ ******************************************************************************/
+// initialization functions
 void NRF24L01_initialize(uint8_t config,
                          uint8_t opt_rx_standby_mode,
                          uint8_t en_aa,
@@ -269,15 +269,15 @@ void NRF24L01_initialize(uint8_t config,
 void nrf24l01_initialize_debug(bool rx, uint8_t p0_payload_width, bool enable_auto_ack);
 void nrf24l01_initialize_debug_lite(bool rx, uint8_t p0_payload_width);
 
-//power-up, power-down functions
+// power-up, power-down functions
 void nrf24l01_power_up(bool rx_active_mode);
 void nrf24l01_power_up_param(bool rx_active_mode, uint8_t config);
 void nrf24l01_power_down(void);
 void nrf24l01_power_down_param(uint8_t config);
 
-//SPI commands defined by the spec
-//for regnumber values, see section above titled "register definitions"
-//all functions return the STATUS register
+// SPI commands defined by the spec
+// for regnumber values, see section above titled "register definitions"
+// all functions return the STATUS register
 uint8_t nrf24l01_write_register(uint8_t regnumber, uint8_t *data, unsigned int len);
 uint8_t nrf24l01_read_register(uint8_t regnumber, uint8_t *data, unsigned int len);
 uint8_t nrf24l01_write_tx_payload(uint8_t *data, unsigned int len, bool transmit);
@@ -287,7 +287,7 @@ uint8_t nrf24l01_flush_rx(void);
 uint8_t nrf24l01_reuse_tx_pl(void);
 uint8_t nrf24l01_nop(void);
 
-//RX/TX setting functions
+// RX/TX setting functions
 void nrf24l01_set_as_rx(bool rx_active_mode);
 void nrf24l01_set_as_rx_param(bool rx_active_mode, uint8_t config);
 void nrf24l01_rx_standby_to_active(void);
@@ -295,7 +295,7 @@ void nrf24l01_rx_active_to_standby(void);
 void nrf24l01_set_as_tx(void);
 void nrf24l01_set_as_tx_param(uint8_t config);
 
-//register-oriented get/set functions for commonly-used registers during operation
+// register-oriented get/set functions for commonly-used registers during operation
 uint8_t nrf24l01_get_config(void);
 void nrf24l01_set_config(uint8_t config);
 uint8_t nrf24l01_get_rf_ch(void);
@@ -308,7 +308,7 @@ void nrf24l01_set_rx_pw(uint8_t payloadwidth, uint8_t rxpipenum);
 uint8_t nrf24l01_get_rx_pw(uint8_t rxpipenum);
 uint8_t nrf24l01_get_fifo_status(void);
 
-//auto-ack and pipe-related functions
+// auto-ack and pipe-related functions
 bool nrf24l01_aa_enabled(uint8_t rxpipenum);
 void nrf24l01_aa_enable(uint8_t rxpipenum);
 void nrf24l01_aa_disable(uint8_t rxpipenum);
@@ -320,14 +320,14 @@ void nrf24l01_clear_plos_cnt(void);
 void nrf24l01_clear_plos_cnt_param(uint8_t rf_ch);
 uint8_t nrf24l01_get_arc_cnt(void);
 
-//utility functions
+// utility functions
 bool nrf24l01_cd_active(void);
 void nrf24l01_clear_flush(void);
 uint8_t nrf24l01_get_rx_pipe(void);
 uint8_t nrf24l01_get_rx_pipe_from_status(uint8_t status);
 void nrf24l01_get_all_registers(uint8_t *data);
 
-//interrupt check/clear functions
+// interrupt check/clear functions
 bool nrf24l01_irq_rx_dr_active(void);
 bool nrf24l01_irq_tx_ds_active(void);
 bool nrf24l01_irq_max_rt_active(void);
@@ -336,7 +336,7 @@ void nrf24l01_irq_clear_rx_dr(void);
 void nrf24l01_irq_clear_tx_ds(void);
 void nrf24l01_irq_clear_max_rt(void);
 
-//FIFO_STATUS check functions
+// FIFO_STATUS check functions
 bool nrf24l01_fifo_tx_reuse(void);
 bool nrf24l01_fifo_tx_full(void);
 bool nrf24l01_fifo_tx_empty(void);
@@ -352,6 +352,7 @@ void nrf24l01_clear_csn(void);
 void nrf24l01_set_csn(void);
 bool nrf24l01_csn_pin_active(void);
 
+inline void nrf24l01_delay_us(uint32_t microseconds);
 uint8_t nrf24l01_spi_send_read_byte(uint8_t byte);
 
 #endif /*__NRF24L01_H */
