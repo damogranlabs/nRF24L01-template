@@ -84,7 +84,7 @@ void nrf24l01_set_csn()
 }
 
 /******************************************************************************
- * TODO: Return `true` if current CSB pin state is high, `false` otherwise.
+ * TODO: Return `true` if current CSN pin state is high, `false` otherwise.
  ******************************************************************************/
 bool nrf24l01_csn_pin_active()
 {
